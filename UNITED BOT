@@ -1,0 +1,79 @@
+import discord
+from discord.ext import commands
+import asyncio
+import time
+
+
+Client = discord.Client()
+client = commands.Bot(command_prefix = "!”)
+
+no_words = ["UDAHS", "HDAS"]
+bypass_list = []
+
+dave = ["YES", "NO", "NOT SURE", "CAN'T ANSWER THAT"]
+
+@client.event
+async def on_ready():
+    print("Bot is ready")
+
+
+@client.event
+async def on_message (message) :
+    if message.content.upper().startswith("!HEY"):
+        userID = message.author.id
+        await client.send_message(message.channel, "HEY <@%s> WELCOME TO ₪ᵁᴺᴵᵀᴱᴰ WHISH U A GOOD STAY " %(userID))
+    if message.content.upper().startswith("!SAY"):
+        if message.author.id == "399281674082582539":
+            args = message.content.split(" ")
+            #args[0] = 1SAY
+            #args[1] = Hey
+            #args[2] = There
+            #args[1:] = Hey There
+            await client.send_message(message.channel, "%s" % (" ".join(args[1:])))
+        else:
+            userID = message.author.id
+            await client.send_message(message.channel, "You do not have permission <@%s>" % (userID))
+    if message.content.upper().startswith("!AMIHELPER"):
+        if "431115510495576065" in (role.id for role in message.author.roles):
+            userID = message.author.id
+            await client.send_message(message.channel, "YOU ARE A HELPER <@%s>" % (userID))
+        else:
+             userID = message.author.id
+             await client.send_message(message.channel, "YOU ARE NOT A HELPER <@%s>" % (userID))
+
+contents = message.content.split(" ")
+    for word in contents:
+        if word.upper() in no_words:
+            if not message.author.id in bypass_list:
+                try:
+                    userID = message.author.id
+                    await client.delete_message(message)
+                    await client.send_message(message.channel, "you can't use those words <@%s>" % (userID))
+                except discord.errors.NotFound:
+                    return
+    if message.content.upper().startswith("!GUESS"):
+        await client.send_message(message.channel, 'Guess a number between 1 to 10')
+
+        def guess_check(m):
+            return m.content.isdigit()
+
+        guess = await client.wait_for_message(timeout=6.0, author=message.author, check=guess_check)
+        answer = random.randint(1, 10)
+        if guess is None:
+            userID = message.author.id
+            fmt = "<@%s>, YOU TOOK TOO LONG. IT WAS {}." % (userID)
+            await client.send_message(message.channel, fmt.format(answer))
+            return
+        if int(guess.content) == answer:
+            userID = message.author.id
+            await client.send_message(message.channel, "YOU'RE RIGHT <@%s>!" % (userID))
+        else:
+            userID = message.author.id
+            await client.send_message(message.channel, "WRONG ANSWER <@%s>. IT'S {}.".format(answer) % (userID))
+    if message.content.upper().startswith("!DAVE"):
+         await client.send_message(message.channel, (random.choice(dave)))
+
+
+
+
+client.run("NDM3MTQ0NTk3MTk0NjA0NTQ1.DdHr4w.sf8K81l5gsNqObS8_I9gcDu3bkI")
